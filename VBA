@@ -1,0 +1,142 @@
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+END
+Attribute VB_Name = "ThisWorkbook"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Sub tickersymbol()
+
+For Each ws In Worksheets
+
+Dim tickersymbol As String
+
+Dim tickervolume As Double
+
+'Dim openprice As Double
+
+'Dim closeprice As Double
+
+Dim yearlychg As Double
+
+Dim percentchg As Double
+
+Dim lastrow As Long
+    lastrow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+Dim maxPercentInc As Double
+Dim minPercentDec As Double
+Dim maxTickerVolume As Double
+Dim maxPercentIncTicker As String
+Dim minPercentDecTicker As String
+Dim maxTotalTickerVolume As String
+
+
+'Dim ws As Worksheet
+'Set ws = Worksheets("A")
+
+'tickersymbol = ws.Cells(irow, 1).Value
+openprice = ws.Cells(2, 3).Value
+'closeprice = ws.Cells(2, 6).Value
+tickervolume = 0
+output_row = 2
+maxPercentInc = 0
+minPercentDec = 0
+maxTotalVolume = 0
+
+
+'column header
+ws.Cells(1, 11).Value = "Ticker"
+ws.Cells(1, 12).Value = "Yearly Change"
+ws.Cells(1, 13).Value = "Percentage Change"
+ws.Cells(1, 14).Value = "Total Stock Volume"
+ws.Cells(1, 18).Value = "Ticker"
+ws.Cells(1, 19).Value = "Value"
+ws.Cells(2, 17).Value = "Greatest % Increase"
+ws.Cells(3, 17).Value = "Greatest % Decrease"
+ws.Cells(4, 17).Value = "Greatest % Total Volume"
+
+
+    For irow = 2 To lastrow
+       tickersymbol = ws.Cells(irow, 1).Value
+    If ws.Cells(irow + 1, 1).Value <> tickersymbol Then
+     
+    tickervolume = tickervolume + ws.Cells(irow, 7).Value
+          closeprice = ws.Cells(irow, 6).Value
+        yearlychg = closeprice - openprice
+        If yearlychg > 0 Then
+        ws.Cells(output_row, 12).Interior.ColorIndex = 4
+        Else
+        ws.Cells(output_row, 12).Interior.ColorIndex = 3
+        End If
+        
+        'place yearlychg output here
+        
+        If openprice = 0 Then
+        percentchg = 0
+        
+        Else
+        percentchg = (yearlychg / openprice)
+        
+        End If
+        
+        If percentchg > maxPercentInc Then
+        maxPercentInc = percentchg
+        maxPercentIncTicker = tickersymbol
+        ElseIf percentchg < minPercentDec Then
+        minPercentDec = percentchg
+        minPercentDecTicker = tickersymbol
+        End If
+        
+        If tickervolume > maxTickerVolume Then
+        maxTickerVolume = tickervolume
+        maxTotalTickerVolume = tickersymbol
+        End If
+        
+        
+             'place ticker output here
+        ws.Cells(output_row, 11).Value = tickersymbol
+        ws.Cells(output_row, 12).Value = yearlychg
+      
+        'place percentage change outout here
+        ws.Cells(output_row, 13).Value = percentchg
+        ws.Cells(output_row, 13).NumberFormat = "0.00%"
+        ws.Cells(output_row, 14).Value = tickervolume
+        
+        'place greatest Inc and Dec percentage output here
+        ws.Cells(2, 18) = maxPercentIncTicker
+        ws.Cells(3, 18) = minPercentDecTicker
+        ws.Cells(4, 19) = maxTickerVolume
+        ws.Cells(2, 19) = maxPercentInc
+        ws.Cells(3, 19) = minPercentDec
+        ws.Cells(4, 18) = maxTotalTickerVolume
+        
+        ws.Cells(output_row, 19).NumberFormat = "0.00%"
+        
+    
+        'incrementing output_row
+        output_row = output_row + 1
+        'reset total volume so that it will count for each ticker
+       tickervolume = 0
+       'finding the opening price for each ticker
+       openprice = ws.Cells(irow + 1, 3).Value
+        'place tickervolume output here
+        
+       Else
+       tickervolume = tickervolume + ws.Cells(irow, 7).Value
+       yearlychg = closeprice - openprice
+        
+
+    End If
+        Next irow
+        Next ws
+        
+        
+ 
+ 
+ 
+ 
+End Sub
+
